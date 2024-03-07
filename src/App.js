@@ -1,22 +1,19 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import Tesseract from 'tesseract.js';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
-import darkTheme from './helpers/theme';
+import BasicAppBar from './components/AppBar';
+import TitleBar from './components/TitleBar';
 import CustomButton from './components/CustomButton';
 import WebcamBox from './components/WebcamBox';
 import ResultCard from './components/ResultCard';
 import PreResultCard from './components/PreResultCard';
-import CalModal from './components/CalModal';
 import preprocessImage from './helpers/preprocess';
 import parseText from './helpers/parseText';
-
-
+import darkTheme from './helpers/theme';
 
 const App = () => {
   const webcamRef = useRef(null);
@@ -75,6 +72,7 @@ const App = () => {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
+      <BasicAppBar />
       {/* Outer box */}
       <Box
         display="flex"
@@ -82,9 +80,7 @@ const App = () => {
         justifyContent="center"
         alignItems="center"
       >
-        <Typography align="center" variant="h1" sx={{ fontWeight: '400', p: '16px', pb: 0 }} >
-          Webcam to Text
-        </Typography>
+        <TitleBar />
         {/* Inner Container */}
         <Grid
           container
