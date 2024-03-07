@@ -1,8 +1,14 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
 
 const htmlPlugin = new HtmlWebpackPlugin({
   template: path.join(__dirname, "index.html"),
+});
+
+const dotEnvObj = new Dotenv({
+  path: "./.env",
+  systemvars: true
 });
 
 module.exports = {
@@ -11,7 +17,10 @@ module.exports = {
     filename: "main.js",
     path: path.resolve(__dirname, "build"),
   },
-  plugins: [htmlPlugin],
+  plugins: [
+    htmlPlugin,
+    dotEnvObj
+  ],
   devServer: {
     static: {
       publicPath: "/",
