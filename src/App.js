@@ -12,15 +12,32 @@ import CircularProgress from '@mui/material/CircularProgress';
 import darkTheme from './helpers/theme';
 import WebcamBox from './components/WebcamBox';
 import CalModal from './components/CalModal';
+import preprocessImage from './helpers/preprocess';
 
 
 const App = () => {
-  // Webcam
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const [imgSrc, setImgSrc] = useState(null);
+  const [image, setImage] = useState('');
   const [text, setText] = useState('');
   const [load, setLoad] = useState(false);
+
+  // Proprocess
+  const handleImageLoad = useCallback(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    // Ensure canvas and image are available
+    if (canvas && image) {
+      canvas.width = image.width;
+      canvas.height = image.height;
+      ctx.drawImage(image, 0, 0);
+      ctx.putImageData(preprocessImage(canvas), 0, 0);
+      const dataUrl = canvas.toDataURL('image/jpeg');
+      console.log('dataUrl: ', dataUrl);
+    }
+  }, [canvasRef, image]);
 
   // Webcam Capture
   const webcamCapture = useCallback(() => {
@@ -29,16 +46,10 @@ const App = () => {
     console.log('imageSrc from frontend App: ', imageSrc);
     setImgSrc(imageSrc);
 
-    // Create a canvas element to draw the image
-    const canvas = document.createElement('canvas');
-    canvas.width = webcamRef.current.video.videoWidth;
-    canvas.height = webcamRef.current.video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(webcamRef.current.video, 0, 0);
-
-    // Convert the canvas image to a data URL
-    const dataUrl = canvas.toDataURL('image/jpeg');
-    setImgSrc(dataUrl);
+    // Set image for display
+    const newImage = new Image();
+    newImage.onLoad = handleImageLoad;
+    newImage.src = imageSrc;
 
     // Run tesseract.js
     Tesseract.recognize(
@@ -59,12 +70,12 @@ const App = () => {
       })
 
 
-  }, [webcamRef, canvasRef]);
+  }, [webcamRef, handleImageLoad]);
 
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      {/* Outer Box */}
+      {/* Outer box */}
       <Box
         spacing={2}
         display="flex"
@@ -75,7 +86,7 @@ const App = () => {
         <Typography align="center" variant="h1" sx={{ fontWeight: '400', p: '16px', pb: 0 }} >
           Webcam to Text
         </Typography>
-        {/* Inner Container */}
+        {/* Inner container below header */}
         <Grid container sx={{ p: 5, paddingTop: 0 }} columnSpacing={{ xs: 1, sm: 2, md: 3, lg: 4 }} >
           {/* Left Column */}
           <Grid item container justifyContent="center" alignContent="start" xs={6} md={4} sx={{ p: 5, bgcolor: '#212121', borderRadius: '8px' }} >
@@ -105,6 +116,8 @@ const App = () => {
                       ?
                       <>
                         <img src={imgSrc} alt="Captured Image" />
+                        <canvas ref={canvasRef} style={{ width: '200', height: '150' }}></canvas>
+                        {/* For canvas later: style={{ position: 'absolute', display: 'none' }} */}
                         <Typography >
                           {text}
                         </Typography>
