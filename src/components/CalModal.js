@@ -3,8 +3,9 @@ import { useSession, useSupabaseClient, useSessionContext } from '@supabase/auth
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import CalendarFields from './CalendarFields';
 import Stack from '@mui/material/Stack';
+import CalendarFields from './CalendarFields';
+
 
 const style = {
   position: 'absolute',
@@ -26,14 +27,15 @@ const CalModal = ({ value }) => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [start, setStart] = useState(null);
-  const [end, setEnd] = useState(null);
-  const [eventName, setEventName] = useState('');
-  const [eventDescription, setEventDescription] = useState('');
+  const [start, setStart] = useState(value.startRenewISO);
+  const [end, setEnd] = useState(value.endRenewISO);
+  const [eventName, setEventName] = useState(`Renew Driver's License`);
+  const [eventDescription, setEventDescription] = useState(`Time to renew my driver's license! Thanks to "Snap for Renewal Reminder App"!`);
 
   // When session exists we have a user
   const session = useSession();
   const supabase = useSupabaseClient();
+
   const { isLoading } = useSessionContext();
 
   if (isLoading) {
