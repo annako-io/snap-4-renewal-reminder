@@ -6,44 +6,45 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import CircularProgress from '@mui/material/CircularProgress';
 import darkTheme from './helpers/theme';
+import CustomButton from './components/CustomButton';
 import WebcamBox from './components/WebcamBox';
+import ResultCard from './components/ResultCard';
+import PreResultCard from './components/PreResultCard';
 import CalModal from './components/CalModal';
 import preprocessImage from './helpers/preprocess';
+import parseText from './helpers/parseText';
+
 
 
 const App = () => {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const imageRef = useRef(null);
   const [imgSrc, setImgSrc] = useState(null);
-  const [image, setImage] = useState('');
-  const [text, setText] = useState('');
+  const [text, setText] = useState({});
   const [load, setLoad] = useState(false);
 
   // Proprocess
-  const handleImageLoad = useCallback(() => {
+  const handleImageLoad = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
     // Ensure canvas and image are available
-    if (canvas && image) {
-      canvas.width = image.width;
-      canvas.height = image.height;
-      ctx.drawImage(image, 0, 0);
+    if (canvas && imageRef.current) {
+      canvas.width = imageRef.current.width;
+      canvas.height = imageRef.current.height;
+      ctx.drawImage(imageRef.current, 0, 0);
       ctx.putImageData(preprocessImage(canvas), 0, 0);
       const dataUrl = canvas.toDataURL('image/jpeg');
-      console.log('dataUrl: ', dataUrl);
     }
-  }, [canvasRef, image]);
+  };
 
   // Webcam Capture
   const webcamCapture = useCallback(() => {
     setLoad(true);
     const imageSrc = webcamRef.current.getScreenshot();
-    console.log('imageSrc from frontend App: ', imageSrc);
     setImgSrc(imageSrc);
 
     // Set image for display
@@ -55,29 +56,27 @@ const App = () => {
     Tesseract.recognize(
       imageSrc,
       'eng',
-      { logger: m => console.log('logger from server: ', m) }
+      { logger: m => console.log('logger: ', m) }
     )
       .catch(err => {
         console.error(err);
       })
       .then(result => {
-        console.log('result.data is: ', result.data);
         const confidence = result.data.confidence;
         console.log(confidence);
         let text = result.data.text;
+        text = parseText(text);
         setText(text);
         setLoad(false);
       })
 
-
-  }, [webcamRef, handleImageLoad]);
+  }, [webcamRef, imageRef, canvasRef]);
 
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       {/* Outer box */}
       <Box
-        spacing={2}
         display="flex"
         flexDirection="column"
         justifyContent="center"
@@ -86,26 +85,38 @@ const App = () => {
         <Typography align="center" variant="h1" sx={{ fontWeight: '400', p: '16px', pb: 0 }} >
           Webcam to Text
         </Typography>
-        {/* Inner container below header */}
-        <Grid container sx={{ p: 5, paddingTop: 0 }} columnSpacing={{ xs: 1, sm: 2, md: 3, lg: 4 }} >
+        {/* Inner Container */}
+        <Grid
+          container
+          spacing={1}
+          wrap="nowrap"
+          sx={{
+            p: 1,
+            pl: { lg: 2 },
+            m: 1,
+            ml: { md: 2, lg: 2 },
+            mr: { xs: 5, sm: 6, md: 3 },
+            display: 'flex',
+            flexDirection: { xs: 'column-reverse', sm: 'column-reverse', md: 'row', lg: 'row' },
+          }}
+          columnSpacing={{ md: 1, lg: 1 }}
+        >
           {/* Left Column */}
-          <Grid item container justifyContent="center" alignContent="start" xs={6} md={4} sx={{ p: 5, bgcolor: '#212121', borderRadius: '8px' }} >
-            <Button
-              variant="contained"
-              onClick={webcamCapture}
-              sx={{
-                textTransform: "none",
-                fontSize: "2rem",
-                width: "90%",
-                height: "100px",
-                borderRadius: "8px",
-                marginBottom: "15px"
-              }}
+          <Grid
+            item
+            container
+            justifyContent="center"
+            xs={12}
+            md={4}
+            lg={4}
+            sx={{ p: 2, m: 2, bgcolor: '#212121', borderRadius: '8px' }}
+          >
+            <Grid
+              container
+              justifyContent="center"
+              alignContent="start"
             >
-              <PhotoCameraIcon sx={{ mr: 2, fontSize: '3rem' }} />
-              Capture
-            </Button>
-            <Grid container justifyContent="center" alignContent="start" >
+              <CustomButton webCaptureClick={webcamCapture} />
               {
                 load
                   ?
@@ -115,26 +126,31 @@ const App = () => {
                     imgSrc
                       ?
                       <>
-                        <img src={imgSrc} alt="Captured Image" />
-                        <canvas ref={canvasRef} style={{ width: '200', height: '150' }}></canvas>
-                        {/* For canvas later: style={{ position: 'absolute', display: 'none' }} */}
-                        <Typography >
-                          {text}
-                        </Typography>
+                        <ResultCard
+                          text={text}
+                          pic={imgSrc}
+                          forwardedImgRef={imageRef}
+                          onLoad={handleImageLoad}
+                        />
+                        <canvas
+                          ref={canvasRef}
+                          style={{
+                            width: '250',
+                            height: '150',
+                            position: 'absolute',
+                            display: 'none'
+                          }}
+                        ></canvas>
                       </>
                       :
-                      <Typography color="text.secondary">
-                        No image yet.
-                      </Typography>
+                      <PreResultCard />
                   )
               }
             </Grid>
           </Grid>
           {/* Right Column */}
-          <Grid item container xs={6} md={8} alignItems="start" justifyContent="center" sx={{ bgcolor: '#212121', borderRadius: '8px' }} >
-            <WebcamBox webcamRef={webcamRef} />
-            <CalModal />
-          </Grid>
+          <WebcamBox webcamRef={webcamRef} />
+          <CalModal />
         </Grid>
       </Box>
     </ThemeProvider>
