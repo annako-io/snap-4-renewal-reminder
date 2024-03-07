@@ -8,7 +8,7 @@
     "build": "webpack --mode production"
   },
   "keywords": [],
-  "author": "",
+  "author": "Anna Ko",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.24.0",
@@ -34,5 +34,17 @@
     "react-dom": "^18.2.0",
     "react-webcam": "^7.2.0",
     "tesseract.js": "^5.0.5"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

@@ -73,7 +73,7 @@ const App = () => {
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <BasicAppBar />
-      {/* Outer box */}
+      {/* Outer Container */}
       <Box
         display="flex"
         flexDirection="column"
@@ -146,7 +146,6 @@ const App = () => {
           </Grid>
           {/* Right Column */}
           <WebcamBox webcamRef={webcamRef} />
-          <CalModal />
         </Grid>
       </Box>
     </ThemeProvider>

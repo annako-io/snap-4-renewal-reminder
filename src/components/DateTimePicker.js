@@ -5,8 +5,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
-const EventDateTimePicker = ({ value, onChange, label }) => {
-  // const [value, setValue] = useState(dayjs(date));
+export default function EventDateTimePicker({ date, onChange, label }) {
+  const [value, setValue] = useState(dayjs(date));
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -20,5 +20,3 @@ const EventDateTimePicker = ({ value, onChange, label }) => {
     </LocalizationProvider>
   );
 }
-
-export default EventDateTimePicker;

@@ -5,22 +5,24 @@ const parseText = (text) => {
   let noExpDateExtracted = null;
   const dates = {};
 
-  // console.log('text data: ', text);
+  console.log('text data: ', text);
   const rows = text.split('\n').map(row => row.split('\t').join(''));
-  // console.log('rows: ', rows);
+  console.log('rows: ', rows);
   for (let i = 0; i < rows.length; i++) {
-    // expiration date
-    const expCheck = /(ex|exp|xp)/g;
-    if (expCheck.test(rows[i])) {
-      // console.log('String includes "ex" or "exp".');
-      expDate = findDate(rows[i]);
-      continue;
-    }
-
     // Find any dates
     if (hasDate(rows[i])) {
+      console.log('hasDate()? ', hasDate(rows[i]));
       dates[i] = findDate(rows[i]);
+      console.log('Yes, hasDate & set ', findDate(rows[i]));
     }
+
+    // 'exp' or 'ex' substring
+    const expCheck = /(ex|exp|xp)/g;
+    if (expCheck.test(rows[i])) {
+      console.log('String includes "ex" or "exp".');
+      expDate = findDate(rows[i]);
+      continue;
+    }    
   }
 
   if (!expDate) {
@@ -29,15 +31,20 @@ const parseText = (text) => {
       const noRecord = {
         noExpDate: noExpDateExtracted
       };
+      console.log('No Record of Exp: ', noRecord);
       return noRecord;
     }
+    
     expDate = findLatestDate(Object.values(dates));
+    console.log('Latest date (hopefully exp): ', expDate);
 
     // recommended renewal date
     renewDate = subtractTwoMonths(expDate);
     if (isBeforeToday(renewDate)) {
+      console.log('Is exp before today? ', isBeforeToday(renewDate))
       renewDate = formatDate(new Date());
       renewNow = true;
+      console.log('New renewal date ', renewDate);
     }
 
     // full record
