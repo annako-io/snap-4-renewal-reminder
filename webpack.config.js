@@ -12,7 +12,7 @@ const dotEnvObj = new Dotenv({
 });
 
 module.exports = {
-  entry: "./src/index.ts",
+  entry: "./src/index.tsx",
   output: {
     filename: "main.js",
     path: path.resolve(__dirname, "build"),

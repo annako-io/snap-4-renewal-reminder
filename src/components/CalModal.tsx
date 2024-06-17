@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
-import { useSession, useSupabaseClient, useSessionContext } from '@supabase/auth-helpers-react';
-import Modal from '@mui/material/Modal';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
+import React, { ReactElement, useState } from 'react';
+import { useSession, useSupabaseClient, useSessionContext, Session, SupabaseClient } from '@supabase/auth-helpers-react';
+import { Button, Modal, Stack, Typography, SxProps, Theme } from '@mui/material';
 import CalendarFields from './CalendarFields';
+import { RecordResult } from '../helpers/parseText';
 
+type DateString = string;
 
-const style = {
+const stackStyle: SxProps<Theme> = {
   position: 'absolute',
   top: '50%',
   left: '50%',
@@ -21,28 +20,44 @@ const style = {
   textAlign: 'center'
 };
 
-const CalModal = ({ value }) => {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+interface CalendarEvent {
+  summary: string;
+  description: string;
+  start: {
+    dateTime: DateString | undefined;
+    timeZone: DateString;
+  };
+  end: {
+    dateTime: DateString | undefined;
+    timeZone: DateString;
+  };
+}
 
-  const [start, setStart] = useState(value.startRenewISO);
-  const [end, setEnd] = useState(value.endRenewISO);
-  const [eventName, setEventName] = useState(`Renew Driver's License`);
-  const [eventDescription, setEventDescription] = useState(`Time to renew my driver's license! Thanks to "Snap for Renewal Reminder App"!`);
+type PropType = {
+  value: RecordResult;
+};
+
+const CalModal = ({ value }: PropType): ReactElement => {
+  const [open, setOpen] = useState<boolean>(false);
+  const [start, setStart] = useState<DateString>(value.startRenewISO || '');
+  const [end, setEnd] = useState<DateString>(value.endRenewISO || '');
+  const [eventName, setEventName] = useState<string>(`Renew Driver's License`);
+  const [eventDescription, setEventDescription] = useState<string>(`Time to renew my driver's license! Thanks to "Snap for Renewal Reminder App"!`);
 
   // When session exists we have a user
-  const session = useSession();
-  const supabase = useSupabaseClient();
-
+  const session: Session | null = useSession();
+  const supabase: SupabaseClient = useSupabaseClient();
   const { isLoading } = useSessionContext();
+
+  const handleOpen = (): void => setOpen(true);
+  const handleClose = (): void => setOpen(false);
 
   if (isLoading) {
     return <></>;
   }
 
   // Google sign in
-  async function googleSignIn() {
+  async function googleSignIn(): Promise<void> {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -51,19 +66,19 @@ const CalModal = ({ value }) => {
     });
     if (error) {
       alert('Error logging into Google provider with Supabase');
-      console.log(error);
+      console.error('Error logging into Google provider with Supabase: ', error.message);
     }
   }
 
   // Google sign out
-  async function signOut() {
+  async function signOut(): Promise<void> {
     await supabase.auth.signOut();
   }
 
   // Create calendar event
-  async function createCalendarEvent() {
+  async function createCalendarEvent(): Promise<void> {
     console.log('Creating calendar event');
-    const event = {
+    const event: CalendarEvent = {
       'summary': eventName,
       'description': eventDescription,
       'start': {
@@ -75,28 +90,51 @@ const CalModal = ({ value }) => {
         'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone // local time
       },
     };
-    await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + session.provider_token // Access token for Google
-      },
-      body: JSON.stringify(event)
-    }).then((response) => {
-      return response.json();
-    }).then((data) => {
-      console.log(data);
-      alert('Event created, check your Google Calendar');
-    }).catch((error) => {
-      console.log('Calendar creation error: ', error);
-    })
-    resetFields();
+
+    try {
+      const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + session?.provider_token // Access token for Google
+        },
+        body: JSON.stringify(event)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create calendar event');
+      }
+
+      const data = await response.json();
+      console.log('Event created: ', data);
+      alert('Event created successfully!');
+      resetFields();
+    } catch (error) {
+      console.error('Calendar creation error: ', error);
+      alert('Failed to create calendar event. Please try again.');
+    }
+
+    // await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Authorization': 'Bearer ' + session?.provider_token // Access token for Google
+    //     },
+    //     body: JSON.stringify(event)
+    //   }).then((response) => {
+    //     return response.json();
+    //   }).then((data) => {
+    //     console.log(data);
+    //     alert('Event created, check your Google Calendar');
+    //   }).catch((error) => {
+    //     console.log('Calendar creation error: ', error);
+    //   })
+    // resetFields();
   }
 
-  const resetFields = () => {
-    setStart(null);
-    setEnd(null);
-    setEventName('');
-    setEventDescription('');
+  const resetFields = (): void => {
+    setStart('');
+    setEnd('');
+    setEventName(`Renew Driver's License`);
+    setEventDescription(`Time to renew my driver's license! Thanks to "Snap for Renewal Reminder App"!`);
   };
 
   console.log(session);
@@ -120,7 +158,7 @@ const CalModal = ({ value }) => {
         aria-labelledby="keep-mounted-modal-title"
         aria-describedby="keep-mounted-modal-description"
       >
-        <Stack sx={style}>
+        <Stack sx={stackStyle}>
           <Typography variant='h4' gutterBottom>
             Schedule Your Reminder
           </Typography>
