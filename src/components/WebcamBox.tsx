@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { ReactElement, LegacyRef } from 'react';
 import Webcam from 'react-webcam';
 import Grid from '@mui/material/Grid';
 
-const WebcamBox = ({ webcamRef }) => {
-  const videoConstraints = {
+type PropType = {
+  webcamRef: LegacyRef<Webcam>;
+};
+
+interface Constraints {
+  width: number;
+  height: number;
+}
+
+const WebcamBox = ({ webcamRef }: PropType): ReactElement => {
+  const videoConstraints: Constraints = {
     width: 426,
     height: 240
   };

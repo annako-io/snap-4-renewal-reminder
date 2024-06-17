@@ -11,7 +11,7 @@ export interface RecordResult {
 
 const CalModal = ({ value }: PropType) => {}
 
-const parseText = (text) => {
+export const parseText = (text) => {
   let expDate = '';
   let renewDate = '';
   let renewNow = false;
@@ -174,4 +174,4 @@ const convertToISOStringWithHour = (dateString, hour) => {
   return date.toISOString();
 };
 
-export default parseText;
+// export default parseText;
