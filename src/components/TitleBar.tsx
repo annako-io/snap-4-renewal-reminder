@@ -1,7 +1,8 @@
-import React from "react";
-import { Typography } from "@mui/material";
+import React, { ReactElement } from "react";
+import { Typography, SxProps, Theme } from "@mui/material";
 
-const responsiveTitle = {
+
+const responsiveTitle: SxProps<Theme> = {
   fontWeight: '400',
   mt: 1,
   pb: 0,
@@ -9,11 +10,11 @@ const responsiveTitle = {
   fontSize: { xs: 40, sm: 50, md: 80, lg: 100 }
 };
 
-const responsiveSubtitle = {
+const responsiveSubtitle: SxProps<Theme> = {
   fontSize: { xs: 20, md: 24, lg: 28 }
 };
 
-const TitleBar = () => {
+const TitleBar = (): ReactElement => {
   return (
     <>
       <Typography
@@ -25,11 +26,11 @@ const TitleBar = () => {
       </Typography>
       <Typography
         align="center"
-        variant="p"
+        // variant="p"
         color="text.secondary"
         sx={responsiveSubtitle}
       >
-        Get a Google Calendar reminder to renew your driver's license from a screenshot 
+        Get a Google Calendar reminder to renew your driver's license from a screenshot
       </Typography>
     </>
   );

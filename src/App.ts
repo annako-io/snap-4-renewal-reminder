@@ -147,7 +147,7 @@ const App = (): ReactElement => {
             </Grid>
           </Grid>
           {/* Right Column */ }
-          <WebcamBox webcamRef={webcamRef} />
+          <WebcamBox webcamRef={webcamRef}/>
         </Grid>
       </Box>
     </ThemeProvider>
