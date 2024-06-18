@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, MutableRefObject, ReactElement, LegacyRef } from 'react';
+import { useRef, useState, useCallback, MutableRefObject, ReactElement, LegacyRef } from 'react';
 import Webcam from 'react-webcam';
 import { ThemeProvider } from '@mui/material/styles';
 import { Box, Grid, CssBaseline, CircularProgress } from '@mui/material';
