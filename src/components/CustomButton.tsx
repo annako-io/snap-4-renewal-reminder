@@ -1,7 +1,6 @@
 import React from 'react';
-import Button from '@mui/material/Button';
+import { Button, SxProps, Theme } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { SxProps, Theme } from '@mui/material';
 
 const iconStyles: SxProps<Theme> = { mr: 2, fontSize: '3rem' };
 
@@ -17,7 +16,7 @@ const CustomButton = ({ webCaptureClick }: CustomButtonPropsType) => {
       sx={{
         textTransform: 'none',
         fontSize: '2rem',
-        width: {xs: '100%', sm: '70%', md: '90%'},
+        width: { xs: '100%', sm: '70%', md: '90%' },
         height: '100px',
         borderRadius: '8px',
         mb: '10px',

@@ -1,7 +1,5 @@
 import React, { ReactElement } from 'react';
-import Card from '@mui/material/Card';
-import Typography from '@mui/material/Typography';
-import { SxProps, Theme } from '@mui/material';
+import { Card, Typography, SxProps, Theme } from '@mui/material';
 
 const cardStyles: SxProps<Theme> = {
   maxWidth: '95%'

@@ -1,13 +1,9 @@
 import React, { ReactElement } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Container from '@mui/material/Container';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import { AppBar, Container, Toolbar, Typography, SxProps, Theme } from '@mui/material';
 import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
 import EastIcon from '@mui/icons-material/East';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { SxProps, Theme } from '@mui/material';
 
 const toolbarStyles: SxProps<Theme> = { display: 'flex', flexWrap: 'wrap' };
 const iconStyles: SxProps<Theme> = { mr: 1 };
