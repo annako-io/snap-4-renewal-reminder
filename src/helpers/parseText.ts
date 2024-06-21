@@ -1,15 +1,12 @@
 type DateString = string;
 
-type PropType = RecordResult;
-export interface RecordResult {
+export interface RecordResultType {
   exp?:  DateString, // expDate
   renew?: DateString, // renewDate
   renewNow?: boolean, // true
   startRenewISO?: DateString, // convertToISOStringWithHour(renewDate, 9),
   endRenewISO?: DateString, // convertToISOStringWithHour(renewDate, 10),
 }
-
-const CalModal = ({ value }: PropType) => {}
 
 export const parseText = (text) => {
   let expDate = '';
@@ -173,5 +170,3 @@ const convertToISOStringWithHour = (dateString, hour) => {
   // Return the ISO string representation
   return date.toISOString();
 };
-
-// export default parseText;

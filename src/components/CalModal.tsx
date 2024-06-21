@@ -2,7 +2,7 @@ import React, { ReactElement, useState } from 'react';
 import { useSession, useSupabaseClient, useSessionContext, Session, SupabaseClient } from '@supabase/auth-helpers-react';
 import { Button, Modal, Stack, Typography, SxProps, Theme } from '@mui/material';
 import CalendarFields from './CalendarFields';
-import { RecordResult } from '../helpers/parseText';
+import { RecordResultType } from '../helpers/parseText';
 
 type DateString = string;
 
@@ -34,7 +34,7 @@ interface CalendarEvent {
 }
 
 interface ModalPropsType {
-  value: RecordResult;
+  value: RecordResultType;
 }
 
 const CalModal = ({ value }: ModalPropsType): ReactElement => {

@@ -3,7 +3,7 @@ import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import { SxProps, Theme } from '@mui/material';
 
-const cardStyles = {
+const cardStyles: SxProps<Theme> = {
   maxWidth: '95%'
 };
 

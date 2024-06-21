@@ -10,7 +10,7 @@ import WebcamBox from './components/WebcamBox';
 import ResultCard from './components/ResultCard';
 import PreResultCard from './components/PreResultCard';
 import preprocessImage from './helpers/preprocess';
-import { parseText, RecordResult } from './helpers/parseText';
+import { parseText, RecordResultType } from './helpers/parseText';
 import darkTheme from './helpers/theme';
 
 const App = (): ReactElement => {
@@ -20,7 +20,7 @@ const App = (): ReactElement => {
   const imageRef: MutableRefObject<HTMLImageElement | null> = useRef(null);
   
   const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [text, setText] = useState<RecordResult | {} | ''>({});
+  const [text, setText] = useState<RecordResultType | {} | ''>({});
   const [load, setLoad] = useState<boolean>(false);
 
   // Proprocess

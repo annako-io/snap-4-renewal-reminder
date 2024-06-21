@@ -5,11 +5,11 @@ import { SxProps, Theme } from '@mui/material';
 
 const iconStyles: SxProps<Theme> = { mr: 2, fontSize: '3rem' };
 
-interface CustomButtonProps {
+interface CustomButtonPropsType {
   webCaptureClick: () => void;
 }
 
-const CustomButton = ({ webCaptureClick }: CustomButtonProps) => {
+const CustomButton = ({ webCaptureClick }: CustomButtonPropsType) => {
   return (
     <Button
       variant='contained'

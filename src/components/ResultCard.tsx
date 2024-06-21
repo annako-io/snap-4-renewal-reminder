@@ -4,11 +4,13 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
+import { SxProps, Theme } from '@mui/material';
 import CalModal from './CalModal';
-import { RecordResult } from '../helpers/parseText';
+import { RecordResultType } from '../helpers/parseText';
 
+const cardStyles: SxProps<Theme> = { maxWidth: '95%' };
 interface ResultCardPropsType {
-  text: RecordResult | '';
+  text: RecordResultType | '';
   pic: string | undefined;
   forwardedImgRef: MutableRefObject<HTMLImageElement | null>;
   onLoad: () => void;
@@ -17,7 +19,7 @@ interface ResultCardPropsType {
 const ResultCard = ({ text, pic, forwardedImgRef, onLoad }: ResultCardPropsType) => {
 
   return (
-    <Card sx={{ maxWidth: '95%' }}>
+    <Card sx={cardStyles}>
       <CardHeader title='Extracted Text' />
       <CardMedia
         component='img'
