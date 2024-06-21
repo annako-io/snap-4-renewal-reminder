@@ -10,7 +10,7 @@ import WebcamBox from './components/WebcamBox';
 import ResultCard from './components/ResultCard';
 import PreResultCard from './components/PreResultCard';
 import preprocessImage from './helpers/preprocess';
-import { parseText, RecordResultType } from './helpers/parseText';
+import { parseText, RecordResultType, ParseTextReturnType } from './helpers/parseText';
 import darkTheme from './helpers/theme';
 
 const App = (): ReactElement => {
