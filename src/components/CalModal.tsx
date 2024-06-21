@@ -6,7 +6,7 @@ import { RecordResult } from '../helpers/parseText';
 
 type DateString = string;
 
-const stackStyle: SxProps<Theme> = {
+const stackStyles: SxProps<Theme> = {
   position: 'absolute',
   top: '50%',
   left: '50%',
@@ -33,11 +33,11 @@ interface CalendarEvent {
   };
 }
 
-type PropType = {
+interface ModalPropsType {
   value: RecordResult;
-};
+}
 
-const CalModal = ({ value }: PropType): ReactElement => {
+const CalModal = ({ value }: ModalPropsType): ReactElement => {
   const [open, setOpen] = useState<boolean>(false);
   const [start, setStart] = useState<DateString>(value.startRenewISO || '');
   const [end, setEnd] = useState<DateString>(value.endRenewISO || '');
@@ -95,7 +95,7 @@ const CalModal = ({ value }: PropType): ReactElement => {
       const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer ' + session?.provider_token // Access token for Google
+          'Authorization': 'Bearer ' + session?.provider_token
         },
         body: JSON.stringify(event)
       });
@@ -112,22 +112,6 @@ const CalModal = ({ value }: PropType): ReactElement => {
       console.error('Calendar creation error: ', error);
       alert('Failed to create calendar event. Please try again.');
     }
-
-    // await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Authorization': 'Bearer ' + session?.provider_token // Access token for Google
-    //     },
-    //     body: JSON.stringify(event)
-    //   }).then((response) => {
-    //     return response.json();
-    //   }).then((data) => {
-    //     console.log(data);
-    //     alert('Event created, check your Google Calendar');
-    //   }).catch((error) => {
-    //     console.log('Calendar creation error: ', error);
-    //   })
-    // resetFields();
   }
 
   const resetFields = (): void => {
@@ -155,10 +139,10 @@ const CalModal = ({ value }: PropType): ReactElement => {
         keepMounted
         open={open}
         onClose={handleClose}
-        aria-labelledby="keep-mounted-modal-title"
-        aria-describedby="keep-mounted-modal-description"
+        aria-labelledby='keep-mounted-modal-title'
+        aria-describedby='keep-mounted-modal-description'
       >
-        <Stack sx={stackStyle}>
+        <Stack sx={stackStyles}>
           <Typography variant='h4' gutterBottom>
             Schedule Your Reminder
           </Typography>
@@ -173,22 +157,22 @@ const CalModal = ({ value }: PropType): ReactElement => {
                 changeStart={setStart}
                 end={end}
                 changeEnd={setEnd}
+                eventName={eventName}
                 setEventName={setEventName}
+                eventDescription={eventDescription}
                 setEventDescription={setEventDescription}
                 resetFields={resetFields}
-                eventName={eventName}
-                eventDescription={eventDescription}
               />
               <Button
                 onClick={() => createCalendarEvent()}
-                variant="contained"
+                variant='contained'
                 sx={{ mt: 2, backgroundColor: '#2196f3' }}
               >
                 Create Reminder
               </Button>
               <Button
                 onClick={() => signOut()}
-                variant="contained"
+                variant='contained'
                 sx={{ my: 2 }}
               >
                 Sign Out
@@ -198,7 +182,7 @@ const CalModal = ({ value }: PropType): ReactElement => {
             <>
               <Button
                 onClick={() => googleSignIn()}
-                variant="contained"
+                variant='contained'
                 sx={{ my: 2 }}
               >
                 Sign In With Google

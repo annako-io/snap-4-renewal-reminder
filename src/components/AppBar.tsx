@@ -9,9 +9,9 @@ import TextFieldsIcon from '@mui/icons-material/TextFields';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { SxProps, Theme } from '@mui/material';
 
-// Define styles using sx props
-const iconStyle: SxProps<Theme> = { mr: 1 };
-const typographyStyle: SxProps<Theme> = {
+const toolbarStyles: SxProps<Theme> = { display: 'flex', flexWrap: 'wrap' };
+const iconStyles: SxProps<Theme> = { mr: 1 };
+const typographyStyles: SxProps<Theme> = {
   mx: 2,
   display: 'flex',
   flexGrow: 1,
@@ -22,24 +22,23 @@ const typographyStyle: SxProps<Theme> = {
   textDecoration: 'none',
 };
 
-// Basic app bar
 const BasicAppBar = (): ReactElement => {
 
   return (
     <AppBar position='static'>
       <Container maxWidth='xl'>
-        <Toolbar sx={{ display: 'flex', flexWrap: 'wrap' }} disableGutters>
-          <PhotoCameraBackIcon sx={iconStyle} aria-label='Camera Icon' />
-          <EastIcon sx={iconStyle} aria-label='Arrow Icon'/>
-          <TextFieldsIcon sx={iconStyle} aria-label='Text Fields Icon' />
-          <EastIcon sx={iconStyle} aria-label='Arrow Icon' />
-          <CalendarMonthIcon sx={iconStyle} aria-label='Calendar Icon'/>
+        <Toolbar sx={toolbarStyles} disableGutters>
+          <PhotoCameraBackIcon sx={iconStyles} aria-label='Camera Icon' />
+          <EastIcon sx={iconStyles} aria-label='Arrow Icon'/>
+          <TextFieldsIcon sx={iconStyles} aria-label='Text Fields Icon' />
+          <EastIcon sx={iconStyles} aria-label='Arrow Icon' />
+          <CalendarMonthIcon sx={iconStyles} aria-label='Calendar Icon'/>
           <Typography
             variant='h5'
             noWrap
             component='a'
             href='#app-bar-with-responsive-menu'
-            sx={typographyStyle}
+            sx={typographyStyles}
           >
             App
           </Typography>

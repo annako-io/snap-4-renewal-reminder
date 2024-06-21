@@ -1,7 +1,6 @@
 import React, { ReactElement } from "react";
 import { Typography, SxProps, Theme } from "@mui/material";
 
-
 const responsiveTitle: SxProps<Theme> = {
   fontWeight: '400',
   mt: 1,

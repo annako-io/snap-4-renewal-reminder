@@ -14,15 +14,17 @@ import { parseText, RecordResult } from './helpers/parseText';
 import darkTheme from './helpers/theme';
 
 const App = (): ReactElement => {
-  const webcamRef: LegacyRef<Webcam> = useRef(null);
+  // const webcamRef: LegacyRef<Webcam> = useRef(null);
+  const webcamRef: MutableRefObject<Webcam | null> = useRef(null);
   const canvasRef: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
   const imageRef: MutableRefObject<HTMLImageElement | null> = useRef(null);
+  
   const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [text, setText] = useState<RecordResult | {}>({});
+  const [text, setText] = useState<RecordResult | {} | ''>({});
   const [load, setLoad] = useState<boolean>(false);
 
   // Proprocess
-  const handleImageLoad = () => {
+  const handleImageLoad = ():void => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     // bug fix
@@ -44,7 +46,7 @@ const App = (): ReactElement => {
   };
 
   // Webcam Capture
-  const webcamCapture = useCallback(() => {
+  const webcamCapture: () => void = useCallback(() => {
     setLoad(true);
     const imageSrc = webcamRef.current?.getScreenshot();
 
@@ -52,7 +54,7 @@ const App = (): ReactElement => {
       setImgSrc(imageSrc);
 
       // Set image for display
-      const newImage = new Image();
+      const newImage: HTMLImageElement = new Image();
       newImage.onload = handleImageLoad;
       newImage.src = imageSrc;
 

@@ -1,17 +1,18 @@
-import React, { ReactElement, LegacyRef } from 'react';
+import React, { ReactElement, MutableRefObject } from 'react';
 import Webcam from 'react-webcam';
 import Grid from '@mui/material/Grid';
 
-type PropType = {
-  webcamRef: LegacyRef<Webcam>;
-};
+interface WebcamBoxPropsType {
+  // webcamRef: LegacyRef<Webcam>;
+  webcamRef: MutableRefObject<Webcam | null>;
+}
 
 interface Constraints {
   width: number;
   height: number;
 }
 
-const WebcamBox = ({ webcamRef }: PropType): ReactElement => {
+const WebcamBox = ({ webcamRef }: WebcamBoxPropsType): ReactElement => {
   const videoConstraints: Constraints = {
     width: 426,
     height: 240
@@ -24,8 +25,8 @@ const WebcamBox = ({ webcamRef }: PropType): ReactElement => {
       xs={12}
       md={8}
       lg={8}
-      alignItems="start"
-      justifyContent="center"
+      alignItems='start'
+      justifyContent='center'
       sx={{
         p: 2,
         m: 2,
