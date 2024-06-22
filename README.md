@@ -2,7 +2,7 @@
 
 ---
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
-![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 ![Google Cloud](https://img.shields.io/badge/GoogleCloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white)
 ![Babel](https://img.shields.io/badge/Babel-F9DC3E?style=for-the-badge&logo=babel&logoColor=white)
@@ -14,7 +14,7 @@
 
 ---
 
-This application is built with React, React Webcam, Supabase, Google Calendar API, and Tesseract.js. Tesseract is an open source optical character recognition (OCR) platform. OCRs extract text from images and documents without a text layer and outputs the data.
+This application is built with TypeScript, React, React Webcam, Supabase, Google Calendar API, and Tesseract.js. Tesseract is an open source optical character recognition (OCR) platform. OCRs extract text from images and documents without a text layer and outputs the data.
 
 Snap for Renewal Reminder can read a California driver's license data using a webcam. It pulls and displays the license expiration date, then gives you the option to create a Google Calendar item to reminder yourself to renew your license during the recommended renewal timeframe (60 days in advance of the expiration).
 
@@ -57,6 +57,5 @@ Your application is ready to go!
 If you are interested in contributing, feel free to submit an issue or a pull request! Snap for Renewal Reminder is open source and I would welcome contributions from other developers excited about the project!
 
 **Future Upgrades**
-* Conversion to TypeScript
 * Add parsing for U.S. Passports
 * Add parsing for different state driver's licenses
