@@ -21,18 +21,15 @@ export const parseText = (text: string): ParseTextReturnType => {
   let noExpDateExtracted = null;
   const dates: DateObject = {};
 
-  // console.log('text data: ', text);
   const rows: string[] = text.split('\n').map(row => row.replace('\t/g', ''));
-  // console.log('rows: ', rows);
+  console.log('FROM parseText: rows: ', rows);
   for (const row of rows) {
     // Check expiration date
     const expCheck: RegExp = /(ex|exp|xp)/g;
     if (expCheck.test(row)) {
-      // console.log('String includes "ex" or "exp".');
       expDate = findDate(row);
       continue;
     }
-
     // Find any dates
     if (hasDate(row)) {
       dates[rows.indexOf(row)] = findDate(row);
@@ -45,25 +42,24 @@ export const parseText = (text: string): ParseTextReturnType => {
       return { noExpDate: noExpDateExtracted };;
     }
     expDate = findLatestDate(Object.values(dates));
-
-    // Recommended renewal date
-    renewDate = subtractTwoMonths(expDate);
-    if (isBeforeToday(renewDate)) {
-      renewDate = formatDate(new Date());
-      renewNow = true;
-    }
-
-    // Full record
-    const record: RecordResultType = {
-      exp: expDate,
-      renew: renewDate,
-      renewNow,
-      startRenewISO: convertToISOStringWithHour(renewDate, 9),
-      endRenewISO: convertToISOStringWithHour(renewDate, 10),
-    };
-    console.log(record);
-    return record;
   }
+  // Recommended renewal date
+  renewDate = subtractTwoMonths(expDate);
+  if (isBeforeToday(renewDate)) {
+    renewDate = formatDate(new Date());
+    renewNow = true;
+  }
+
+  // Full record
+  const record: RecordResultType = {
+    exp: expDate,
+    renew: renewDate,
+    renewNow,
+    startRenewISO: convertToISOStringWithHour(renewDate, 9),
+    endRenewISO: convertToISOStringWithHour(renewDate, 10),
+  };
+  console.log(record);
+  return record;
 };
 
 // Helper function to find a date
@@ -132,7 +128,7 @@ const isBeforeToday = (dateString: DateString): boolean => {
 // Helper function to format date for user
 const formatDate = (date: Date): DateString => {
   // Get the components of the date
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed, so we add 1
+  const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   const year = String(date.getFullYear());
 
@@ -145,6 +141,5 @@ const convertToISOStringWithHour = (dateString: DateString, hour: number): DateS
   const date = new Date(year, month - 1, day);
   date.setHours(hour, 0, 0, 0);
 
-  // Return the ISO string representation
   return date.toISOString();
 };

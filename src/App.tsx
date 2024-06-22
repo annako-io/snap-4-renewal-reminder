@@ -1,7 +1,7 @@
-import { useRef, useState, useCallback, MutableRefObject, ReactElement } from 'react';
+import React, { useRef, useState, useCallback, MutableRefObject, ReactElement, CSSProperties } from 'react';
 import Webcam from 'react-webcam';
 import { ThemeProvider } from '@mui/material/styles';
-import { Box, Grid, CssBaseline, CircularProgress, SxProps, Theme  } from '@mui/material';
+import { Box, Grid, CssBaseline, CircularProgress, SxProps, Theme } from '@mui/material';
 import Tesseract from 'tesseract.js';
 import BasicAppBar from './components/AppBar';
 import TitleBar from './components/TitleBar';
@@ -13,9 +13,9 @@ import preprocessImage from './helpers/preprocess';
 import { parseText, RecordResultType, ParseTextReturnType } from './helpers/parseText';
 import darkTheme from './helpers/theme';
 
-const innerContainerGridStyles: SxProps<Theme>  = {
+const innerContainerGridStyles: SxProps<Theme> = {
   p: 1,
-  pl: {lg: 2},
+  pl: { lg: 2 },
   m: 1,
   ml: { md: 2, lg: 2 },
   mr: { xs: 5, sm: 6, md: 3 },
@@ -23,15 +23,15 @@ const innerContainerGridStyles: SxProps<Theme>  = {
   flexDirection: { xs: 'column-reverse', sm: 'column-reverse', md: 'row', lg: 'row' }
 };
 
-const leftColumnGridStyles: SxProps<Theme> = { 
-  p: 2, 
-  m: 2, 
-  bgcolor: '#212121', 
-  borderRadius: '8px' 
+const leftColumnGridStyles: SxProps<Theme> = {
+  p: 2,
+  m: 2,
+  bgcolor: '#212121',
+  borderRadius: '8px'
 
 };
 
-const canvasStyles: SxProps<Theme>  = {
+const canvasStyles: CSSProperties = {
   width: '250px',
   height: '150px',
   position: 'absolute',
@@ -39,7 +39,6 @@ const canvasStyles: SxProps<Theme>  = {
 };
 
 const App = (): ReactElement => {
-  // const webcamRef: LegacyRef<Webcam> = useRef(null);
   const webcamRef: MutableRefObject<Webcam | null> = useRef(null);
   const canvasRef: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
   const imageRef: MutableRefObject<HTMLImageElement | null> = useRef(null);
@@ -48,30 +47,25 @@ const App = (): ReactElement => {
   const [text, setText] = useState<RecordResultType | {} | ''>({});
   const [load, setLoad] = useState<boolean>(false);
 
-  // Proprocess
+  // Preprocess
   const handleImageLoad = (): void => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
-    // bug fix
     const image = imageRef.current;
 
-    // Ensure canvas and image are available
     if (canvas && image) {
-      // canvas.width = imageRef.current.width;
-      // canvas.height = imageRef.current.height;
-      // bug fix
       canvas.width = image.width;
       canvas.height = image.height;
       ctx?.drawImage(image, 0, 0);
       ctx?.putImageData(preprocessImage(canvas), 0, 0);
       const dataUrl = canvas.toDataURL('image/jpeg');
     } else {
-      console.error('2D content not available');
+      console.error('2D content not available'); 
     }
   };
 
   // Webcam Capture
-  const webcamCapture: () => void = useCallback(() => {
+  const webcamCapture = useCallback(() => {
     setLoad(true);
     const imageSrc = webcamRef.current?.getScreenshot();
 
@@ -89,6 +83,7 @@ const App = (): ReactElement => {
       })
         .catch((err) => {
           console.error(err);
+          setLoad(false);
         })
         .then((result) => {
           const confidence = result?.data?.confidence;
@@ -111,66 +106,65 @@ const App = (): ReactElement => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-    <CssBaseline />
+      <CssBaseline />
       <BasicAppBar />
-      {/* Outer Container */ }
+      {/* Outer Container */}
       <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
+        display='flex'
+        flexDirection='column'
+        justifyContent='center'
+        alignItems='center'
       >
         <TitleBar />
-        {/* Inner Container */ }
+        {/* Inner Container */}
         <Grid
           container
           spacing={1}
-          wrap="nowrap"
+          wrap='nowrap'
           sx={innerContainerGridStyles}
           columnSpacing={{ md: 1, lg: 1 }}
         >
-          {/* Left Column */ }
-        <Grid
-          item
-          container
-          justifyContent="center"
-          xs={12}
-          md={4}
-          lg={4}
-          sx={leftColumnGridStyles}
-        >
+          {/* Left Column */}
           <Grid
+            item
             container
-            justifyContent="center"
-            alignContent="start"
+            justifyContent='center'
+            xs={12}
+            md={4}
+            lg={4}
+            sx={leftColumnGridStyles}
           >
-            <CustomButton webCaptureClick={webcamCapture} />
-              {
-                load ? (
-                  <CircularProgress sx={{ margin: '30px' }}>Loading...</CircularProgress>
-                    ) : imgSrc ? (
-                      <>
-                        <ResultCard
-                          text={text}
-                          pic={imgSrc}
-                          forwardedImgRef={imageRef}
-                          onLoad={handleImageLoad}
-                        />
-                        <canvas
-                          ref={canvasRef}
-                          style={canvasStyles}
-                        ></canvas>
-                      </>
-                    ) : (
-                      <PreResultCard />
-                )}
+            <Grid
+              container
+              justifyContent='center'
+              alignContent='start'
+            >
+              <CustomButton webCaptureClick={webcamCapture} />
+              {load ? (
+                <CircularProgress sx={{ margin: '30px' }} />
+              ) : imgSrc ? (
+                <>
+                  <ResultCard
+                    text={text}
+                    pic={imgSrc}
+                    forwardedImgRef={imageRef}
+                    onLoad={handleImageLoad}
+                  />
+                  <canvas
+                    ref={canvasRef}
+                    style={canvasStyles}
+                  ></canvas>
+                </>
+              ) : (
+                <PreResultCard />
+              )}
+            </Grid>
           </Grid>
+          {/* Right Column */}
+          <WebcamBox webcamRef={webcamRef} />
         </Grid>
-        {/* Right Column */ }
-        <WebcamBox webcamRef={webcamRef} />
-      </Grid>
-    </Box>
-  </ThemeProvider>
+      </Box>
+    </ThemeProvider>
   );
 };
 
