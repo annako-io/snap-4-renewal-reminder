@@ -1,7 +1,7 @@
-import { useRef, useState, useCallback, MutableRefObject, ReactElement, LegacyRef } from 'react';
+import { useRef, useState, useCallback, MutableRefObject, ReactElement } from 'react';
 import Webcam from 'react-webcam';
 import { ThemeProvider } from '@mui/material/styles';
-import { Box, Grid, CssBaseline, CircularProgress } from '@mui/material';
+import { Box, Grid, CssBaseline, CircularProgress, SxProps, Theme  } from '@mui/material';
 import Tesseract from 'tesseract.js';
 import BasicAppBar from './components/AppBar';
 import TitleBar from './components/TitleBar';
@@ -13,18 +13,43 @@ import preprocessImage from './helpers/preprocess';
 import { parseText, RecordResultType, ParseTextReturnType } from './helpers/parseText';
 import darkTheme from './helpers/theme';
 
+const innerContainerGridStyles: SxProps<Theme>  = {
+  p: 1,
+  pl: {lg: 2},
+  m: 1,
+  ml: { md: 2, lg: 2 },
+  mr: { xs: 5, sm: 6, md: 3 },
+  display: 'flex',
+  flexDirection: { xs: 'column-reverse', sm: 'column-reverse', md: 'row', lg: 'row' }
+};
+
+const leftColumnGridStyles: SxProps<Theme> = { 
+  p: 2, 
+  m: 2, 
+  bgcolor: '#212121', 
+  borderRadius: '8px' 
+
+};
+
+const canvasStyles: SxProps<Theme>  = {
+  width: '250px',
+  height: '150px',
+  position: 'absolute',
+  display: 'none'
+};
+
 const App = (): ReactElement => {
   // const webcamRef: LegacyRef<Webcam> = useRef(null);
   const webcamRef: MutableRefObject<Webcam | null> = useRef(null);
   const canvasRef: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
   const imageRef: MutableRefObject<HTMLImageElement | null> = useRef(null);
-  
+
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [text, setText] = useState<RecordResultType | {} | ''>({});
   const [load, setLoad] = useState<boolean>(false);
 
   // Proprocess
-  const handleImageLoad = ():void => {
+  const handleImageLoad = (): void => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     // bug fix
@@ -60,7 +85,7 @@ const App = (): ReactElement => {
 
       // Run tesseract.js
       Tesseract.recognize(imageSrc, 'eng', {
-        logger: (m) => console.log('logger: ', m) 
+        logger: (m) => console.log('logger: ', m)
       })
         .catch((err) => {
           console.error(err);
@@ -68,10 +93,15 @@ const App = (): ReactElement => {
         .then((result) => {
           const confidence = result?.data?.confidence;
           console.log(confidence);
-          let text = result?.data?.text || '';
-          text = parseText(text);
-          setText(text);
-          setLoad(false);
+          const newText = result?.data?.text || '';
+          const parseNewText: ParseTextReturnType = parseText(newText);
+          if (parseNewText !== undefined) {
+            setText(parseNewText);
+            setLoad(false);
+          } else {
+            console.error('Text parse failed');
+            setLoad(false);
+          }
         })
     } else {
       console.error('Webcam capture failed');
@@ -81,7 +111,7 @@ const App = (): ReactElement => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
+    <CssBaseline />
       <BasicAppBar />
       {/* Outer Container */ }
       <Box
@@ -96,63 +126,51 @@ const App = (): ReactElement => {
           container
           spacing={1}
           wrap="nowrap"
-          sx={{
-            p: 1,
-            pl: { lg: 2 },
-            m: 1,
-            ml: { md: 2, lg: 2 },
-            mr: { xs: 5, sm: 6, md: 3 },
-            display: 'flex',
-            flexDirection: { xs: 'column-reverse', sm: 'column-reverse', md: 'row', lg: 'row' },
-          }}
+          sx={innerContainerGridStyles}
           columnSpacing={{ md: 1, lg: 1 }}
         >
           {/* Left Column */ }
+        <Grid
+          item
+          container
+          justifyContent="center"
+          xs={12}
+          md={4}
+          lg={4}
+          sx={leftColumnGridStyles}
+        >
           <Grid
-            item
             container
             justifyContent="center"
-            xs={12}
-            md={4}
-            lg={4}
-            sx={{ p: 2, m: 2, bgcolor: '#212121', borderRadius: '8px' }}
+            alignContent="start"
           >
-            <Grid
-              container
-              justifyContent="center"
-              alignContent="start"
-            >
             <CustomButton webCaptureClick={webcamCapture} />
-            {load ? (
-              <CircularProgress sx={{ margin: '30px' }}> Loading...</CircularProgress>
-            ) : imgSrc ? (  
-                <>
-                  <ResultCard
-                    text={text}
-                    pic={imgSrc}
-                    forwardedImgRef={imageRef}
-                    onLoad={handleImageLoad}
-                  />
-                  <canvas
-                    ref={canvasRef}
-                    style={{
-                      width: '250px',
-                      height: '150px',
-                      position: 'absolute',
-                      display: 'none'
-                    }}
-                  ></canvas>
-                </>
-              ) : (
-                <PreResultCard />
-              )}
-            </Grid>
+              {
+                load ? (
+                  <CircularProgress sx={{ margin: '30px' }}>Loading...</CircularProgress>
+                    ) : imgSrc ? (
+                      <>
+                        <ResultCard
+                          text={text}
+                          pic={imgSrc}
+                          forwardedImgRef={imageRef}
+                          onLoad={handleImageLoad}
+                        />
+                        <canvas
+                          ref={canvasRef}
+                          style={canvasStyles}
+                        ></canvas>
+                      </>
+                    ) : (
+                      <PreResultCard />
+                )}
           </Grid>
-          {/* Right Column */ }
-          <WebcamBox webcamRef={webcamRef}/>
         </Grid>
-      </Box>
-    </ThemeProvider>
+        {/* Right Column */ }
+        <WebcamBox webcamRef={webcamRef} />
+      </Grid>
+    </Box>
+  </ThemeProvider>
   );
 };
 
