@@ -4,18 +4,25 @@
  * 
  */
 
-function preprocessImage(canvas) {
-  const level = 0.5; // Also tried 0.4
-  const radius = 1;
-  const ctx = canvas.getContext('2d');
-  const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+/**
+ * @param  {Canvas} canvas
+ */
+const preprocessImage = (canvas: HTMLCanvasElement): ImageData => {
+  const level: number = 0.5; 
+  const radius: number = 1;
+  const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
+
+  if (!ctx) {
+    throw new Error('2D context not available!');
+  }
+  const image: ImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   blurARGB(image.data, canvas, radius); // confidence: 30
   dilate(image.data, canvas); // confidence: 37; b&d: 38; d&i: 
   // invertColors(image.data); // confidence: 34; b&i: 36; d&i: 39,34
   // thresholdFilter(image.data, level);
   thresholdFilter(image.data, level); // thres only: 20, 33; bdi: 
   return image;
-}
+};
 
 /**
  * Converts the image to black and white pixels depending if they are above or
@@ -24,22 +31,22 @@ function preprocessImage(canvas) {
  *
  * Borrowed from http://www.html5rocks.com/en/tutorials/canvas/imagefilters/
  *
- * @param  {Canvas} canvas Canvas to apply thershold filter on.
+ * @param {Uint8ClampedArray} pixels - The pixel data array.
  * @param  {Float} level Threshold level (0-1).
  */
-function thresholdFilter(pixels, level) {
+const thresholdFilter = (pixels: Uint8ClampedArray, level: number): void => {
   if (level === undefined) {
     level = 0.5;
   }
   // Calculate threshold value on a (0-255) scale
-  const thresh = Math.floor(level * 255);
+  const thresh: number = Math.floor(level * 255);
   for (let i = 0; i < pixels.length; i += 4) {
-    const red = pixels[i];
-    const green = pixels[i + 1];
-    const blue = pixels[i + 2];
+    const red: number = pixels[i];
+    const green: number = pixels[i + 1];
+    const blue: number = pixels[i + 2];
     // CIE luminance for RGB
-    const gray = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-    let value;
+    const gray: number = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+    let value: number;
     if (gray >= thresh) {
       value = 255;
     } else {
@@ -47,7 +54,7 @@ function thresholdFilter(pixels, level) {
     }
     pixels[i] = pixels[i + 1] = pixels[i + 2] = value; // set pixel to value
   }
-}
+};
 
 /**
  * Modifies pixels RGBA values to values contained in the data object.
@@ -56,7 +63,7 @@ function thresholdFilter(pixels, level) {
  * @param {Int32Array}        data   source 1D array where each value
  *                                   represents ARGB values
  */
-function setPixels(pixels, data) {
+const setPixels = (pixels: Uint8ClampedArray, data: Int32Array): void => {
   let offset = 0;
   for (let i = 0, al = pixels.length; i < al; i++) {
     offset = i * 4;
@@ -76,7 +83,7 @@ function setPixels(pixels, data) {
 * @return {Integer}                32-bit integer value representing
 *                                  ARGB value.
 */
-function getARGB(data, i) {
+const getARGB = (data: Uint8ClampedArray, i: number): number => {
   const offset = i * 4;
   return (
     ((data[offset + 3] << 24) & 0xff000000) |
@@ -87,10 +94,10 @@ function getARGB(data, i) {
 };
 
 // internal kernel stuff for the gaussian blur filter
-let blurRadius;
-let blurKernelSize;
-let blurKernel;
-let blurMult;
+let blurRadius: number;
+let blurKernelSize: number;
+let blurKernel: Int32Array;
+let blurMult: any;
 
 /*
  * Port of https://github.com/processing/processing/blob/
@@ -102,7 +109,7 @@ let blurMult;
  * added support for various image types (ALPHA, RGB, ARGB)
  * [toxi 050728]
  */
-function buildBlurKernel(r) {
+const buildBlurKernel = (r: number): void => {
   let radius = (r * 3.5) | 0;
   radius = radius < 1 ? 1 : radius < 248 ? radius : 248;
 
@@ -133,22 +140,22 @@ function buildBlurKernel(r) {
       bm[k] = bk * k;
     }
   }
-}
+};
 
-function blurARGB(pixels, canvas, radius) {
-  const width = canvas.width;
-  const height = canvas.height;
-  const numPackedPixels = width * height;
-  const argb = new Int32Array(numPackedPixels);
+const blurARGB = (pixels: Uint8ClampedArray, canvas: HTMLCanvasElement, radius: number): void => {
+  const width: number = canvas.width;
+  const height: number = canvas.height;
+  const numPackedPixels: number = width * height;
+  const argb: Int32Array = new Int32Array(numPackedPixels);
   for (let j = 0; j < numPackedPixels; j++) {
     argb[j] = getARGB(pixels, j);
   }
   let sum, cr, cg, cb, ca;
   let read, ri, ym, ymi, bk0;
-  const a2 = new Int32Array(numPackedPixels);
-  const r2 = new Int32Array(numPackedPixels);
-  const g2 = new Int32Array(numPackedPixels);
-  const b2 = new Int32Array(numPackedPixels);
+  const a2: Int32Array = new Int32Array(numPackedPixels);
+  const r2: Int32Array = new Int32Array(numPackedPixels);
+  const g2: Int32Array = new Int32Array(numPackedPixels);
+  const b2: Int32Array = new Int32Array(numPackedPixels);
   let yi = 0;
   buildBlurKernel(radius);
   let x, y, i;
@@ -228,13 +235,14 @@ function blurARGB(pixels, canvas, radius) {
     ym++;
   }
   setPixels(pixels, argb);
-}
+};
 
 /**
  * Increases the bright areas in an image.
+ * @param {Uint8ClampedArray} pixels - The pixel data array.
  * @param  {Canvas} canvas
  */
-function dilate(pixels, canvas) {
+const dilate = (pixels: Uint8ClampedArray, canvas: HTMLCanvasElement): void => {
   let currIdx = 0;
   const maxIdx = pixels.length ? pixels.length / 4 : 0;
   const out = new Int32Array(maxIdx);
@@ -317,14 +325,14 @@ function dilate(pixels, canvas) {
 
 /**
  * Sets each pixel to its inverse value. No parameter is used.
- * @param  {Canvas} canvas
+ * @param {Uint8ClampedArray} pixels - The pixel data array.
  */
-function invertColors(pixels) {
+const invertColors = (pixels: Uint8ClampedArray) => {
   for (var i = 0; i < pixels.length; i += 4) {
     pixels[i] = pixels[i] ^ 255; // Invert Red
     pixels[i + 1] = pixels[i + 1] ^ 255; // Invert Green
     pixels[i + 2] = pixels[i + 2] ^ 255; // Invert Blue
   }
-}
+};
 
 export default preprocessImage;

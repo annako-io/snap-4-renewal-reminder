@@ -12,7 +12,7 @@ const dotEnvObj = new Dotenv({
 });
 
 module.exports = {
-  entry: "./src/index.js",
+  entry: "./src/index.tsx",
   output: {
     filename: "main.js",
     path: path.resolve(__dirname, "build"),
@@ -31,13 +31,21 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(t|j)sx?$/,
+        use: { loader: "ts-loader" },
         exclude: /node_modules/,
-        use: ["babel-loader"],
+      },
+      // source-map support
+      {
+        enforce: "pre",
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: "source-map-loader"
       }
     ],
   },
+  devtool: "source-map",
   resolve: {
-    extensions: [".*", ".js", ".jsx"],
+    extensions: [".*", ".ts", ".tsx", ".js", ".jsx"],
   },
 };

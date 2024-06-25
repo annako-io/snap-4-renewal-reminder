@@ -1,20 +1,25 @@
-import React from 'react';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
+import React, { MutableRefObject } from 'react';
+import { Card, CardHeader, CardContent, CardMedia, Typography, SxProps, Theme } from '@mui/material';
 import CalModal from './CalModal';
+import { RecordResultType } from '../helpers/parseText';
 
-const ResultCard = ({ text, pic, forwardedImgRef, onLoad }) => {
+const cardStyles: SxProps<Theme> = { maxWidth: '95%' };
+interface ResultCardPropsType {
+  text: RecordResultType | '';
+  pic: string | undefined;
+  forwardedImgRef: MutableRefObject<HTMLImageElement | null>;
+  onLoad: () => void;
+}
+
+const ResultCard = ({ text, pic, forwardedImgRef, onLoad }: ResultCardPropsType) => {
 
   return (
-    <Card sx={{ maxWidth: '95%' }}>
-      <CardHeader title="Extracted Text" />
+    <Card sx={cardStyles}>
+      <CardHeader title='Extracted Text' />
       <CardMedia
-        component="img"
-        alt="ocr"
-        height="240"
+        component='img'
+        alt='ocr'
+        height='240'
         image={pic}
         ref={forwardedImgRef}
         onLoad={onLoad}
@@ -25,8 +30,8 @@ const ResultCard = ({ text, pic, forwardedImgRef, onLoad }) => {
             text.exp !== undefined ? (
               <>
                 <Typography
-                  variant="body2"
-                  color="text.secondary"
+                  variant='body2'
+                  color='text.secondary'
                 >
                   Expiration Date: {text.exp}
                   <br />
@@ -36,14 +41,14 @@ const ResultCard = ({ text, pic, forwardedImgRef, onLoad }) => {
                   text.renewNow
                     ? (
                       <Typography
-                        variant="body2"
-                        color="text.secondary"
+                        variant='body2'
+                        color='text.secondary'
                       >
                         Looks like you're past the recommended renewal date. Now is a good time to renew!
                       </Typography>
                     ) : (
                       <Typography
-                        variant="body2"
+                        variant='body2'
                       >
                         Recommended Renewal Date: {text.renew}
                         <br />
@@ -55,8 +60,8 @@ const ResultCard = ({ text, pic, forwardedImgRef, onLoad }) => {
               </>
             ) : (
               <Typography
-                variant="body2"
-                color="text.secondary"
+                variant='body2'
+                color='text.secondary'
               >
                 Looks like there was an error extracting the expiration date.
                 <br />
@@ -65,8 +70,8 @@ const ResultCard = ({ text, pic, forwardedImgRef, onLoad }) => {
             )
           ) : (
             <Typography
-              variant="body2"
-              color="text.secondary"
+              variant='body2'
+              color='text.secondary'
             >
               Looks like there was an error extracting the text data.
               <br />
