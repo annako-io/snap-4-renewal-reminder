@@ -46,7 +46,9 @@ export const parseText = (text: string): ParseTextReturnType => {
   // Recommended renewal date
   renewDate = subtractTwoMonths(expDate);
   if (isBeforeToday(renewDate)) {
-    renewDate = formatDate(new Date());
+    const today = new Date();
+    const tomorrow = new Date(today.setDate(today.getDate() + 1));
+    renewDate = formatDate(tomorrow);
     renewNow = true;
   }
 
